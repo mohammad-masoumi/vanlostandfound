@@ -1,4 +1,6 @@
 const STORAGE_KEY = "vanlostandfound-items";
+const API_BASE_URL = (window.VANLOST_API_BASE_URL ?? "").replace(/\/$/, "");
+const API_TIMEOUT_MS = 2500;
 
 const sampleItems = [
   {
@@ -64,7 +66,8 @@ const sampleItems = [
 ];
 
 const state = {
-  items: loadItems(),
+  items: [],
+  usingBackend: false,
   filters: {
     search: "",
     status: "all",
@@ -93,10 +96,12 @@ const elements = {
 
 init();
 
-function init() {
+async function init() {
   elements.year.textContent = new Date().getFullYear();
   elements.form.elements.date.value = new Date().toISOString().slice(0, 10);
+  elements.formNote.textContent = "Loading listings...";
   bindEvents();
+  await loadListings();
   render();
 }
 
@@ -121,10 +126,29 @@ function bindEvents() {
     render();
   });
 
-  elements.form.addEventListener("submit", event => {
+  elements.form.addEventListener("submit", async event => {
     event.preventDefault();
+    elements.formNote.textContent = "Saving listing...";
+
     const formData = new FormData(elements.form);
     const newItem = Object.fromEntries(formData.entries());
+
+    if (state.usingBackend) {
+      try {
+        const { item } = await apiRequest("/api/items", {
+          method: "POST",
+          body: newItem
+        });
+        state.items = [item, ...state.items];
+        resetReportForm();
+        elements.formNote.textContent = "Listing added to the shared backend.";
+        render();
+        return;
+      } catch (error) {
+        console.warn("Backend save failed; saving locally instead.", error);
+        state.usingBackend = false;
+      }
+    }
 
     state.items = [
       {
@@ -134,16 +158,23 @@ function bindEvents() {
       ...state.items
     ];
 
-    saveItems(state.items);
-    elements.form.reset();
-    elements.form.elements.date.value = new Date().toISOString().slice(0, 10);
-    elements.formNote.textContent = "Listing added. It is saved in this browser demo.";
+    saveLocalItems(state.items);
+    resetReportForm();
+    elements.formNote.textContent = "Backend unavailable, so the listing was saved in this browser only.";
     render();
   });
 
-  elements.resetDemo.addEventListener("click", () => {
+  elements.resetDemo.addEventListener("click", async () => {
+    if (state.usingBackend) {
+      await loadListings();
+      elements.formNote.textContent = "Shared listings reloaded from the backend.";
+      render();
+      return;
+    }
+
     state.items = sampleItems;
-    saveItems(state.items);
+    saveLocalItems(state.items);
+    elements.formNote.textContent = "Local demo data was reset.";
     render();
   });
 
@@ -158,6 +189,62 @@ function bindEvents() {
       elements.navToggle.setAttribute("aria-expanded", "false");
     }
   });
+}
+
+async function loadListings() {
+  try {
+    const { items } = await apiRequest("/api/items");
+    state.items = Array.isArray(items) ? items : [];
+    state.usingBackend = true;
+    elements.formNote.textContent = "Connected to the shared backend.";
+  } catch (error) {
+    console.info("Backend unavailable; using local browser storage.", error);
+    state.items = loadLocalItems();
+    state.usingBackend = false;
+    elements.formNote.textContent = "Demo mode: listings are saved in this browser only.";
+  }
+}
+
+async function apiRequest(path, options = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: options.method ?? "GET",
+      headers: {
+        Accept: "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {})
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      const message = await getErrorMessage(response);
+      throw new Error(message);
+    }
+
+    if (response.status === 204) return null;
+    return response.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+async function getErrorMessage(response) {
+  try {
+    const data = await response.json();
+    if (Array.isArray(data.errors)) return data.errors.join(" ");
+    return data.error ?? `Request failed with status ${response.status}.`;
+  } catch {
+    return `Request failed with status ${response.status}.`;
+  }
+}
+
+function resetReportForm() {
+  elements.form.reset();
+  elements.form.elements.date.value = new Date().toISOString().slice(0, 10);
 }
 
 function render() {
@@ -210,7 +297,7 @@ function getFilteredItems() {
   });
 }
 
-function loadItems() {
+function loadLocalItems() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : sampleItems;
@@ -219,7 +306,7 @@ function loadItems() {
   }
 }
 
-function saveItems(items) {
+function saveLocalItems(items) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
