@@ -1,128 +1,86 @@
 # VanLost & Found
 
-A clean website for reporting and browsing lost and found items around Vancouver.
+A Vancouver lost-and-found website with a GitHub Pages frontend and a Render-hosted backend API.
+
+## Architecture
+
+- Frontend: static HTML, CSS, and JavaScript, published with GitHub Pages.
+- Backend: Node.js and Express API in the `server/` folder, designed for Render Web Services.
+- Database: PostgreSQL on Render for shared persistent listings.
 
 ## Features
 
-- Responsive landing page for a community lost-and-found board
+- Responsive lost-and-found landing page
+- Render backend API integration for shared listings
 - Search and filters by keyword, status, category, and area
-- Report form for lost or found items
-- Express backend API for shared listings
-- JSON-file persistence for simple local deployment
-- Browser `localStorage` fallback when the backend is unavailable
-- Safe handoff reminders and privacy-conscious item descriptions
-- GitHub Pages deployment workflow for the static frontend
+- Report form that saves new listings to PostgreSQL
+- CORS restricted to the GitHub Pages origin and local development origins
+- Render health check endpoint at `/health`
 
-## Project structure
+## Expected URLs
 
-```text
-.
-├── index.html          # Static frontend
-├── styles.css          # Frontend styles
-├── app.js              # Frontend logic with API + localStorage fallback
-└── backend/
-    ├── package.json
-    ├── .env.example
-    └── src/
-        ├── app.js      # Express routes and middleware
-        ├── server.js   # API server entry point
-        ├── store.js    # JSON-file persistence
-        └── validation.js
-```
-
-## Backend API
-
-The backend exposes these endpoints:
-
-```text
-GET    /api/health
-GET    /api/items?search=&status=&category=&area=
-GET    /api/items/:id
-POST   /api/items
-PATCH  /api/items/:id
-DELETE /api/items/:id
-POST   /api/items/reset-demo
-```
-
-`POST /api/items` accepts this JSON body:
-
-```json
-{
-  "status": "Lost",
-  "category": "Wallet",
-  "title": "Brown leather wallet",
-  "description": "Last seen near Kits Beach.",
-  "area": "Kitsilano",
-  "date": "2026-06-30",
-  "contact": "text 604-555-0198"
-}
-```
-
-Allowed values match the frontend dropdowns:
-
-- `status`: `Lost`, `Found`
-- `category`: `Phone`, `Wallet`, `Keys`, `Bag`, `Bike`, `Pet`, `ID / Documents`, `Other`
-- `area`: `Downtown`, `Kitsilano`, `UBC`, `Burnaby`, `North Vancouver`, `Richmond`, `Surrey`, `Other`
-
-## Run the backend locally
-
-```bash
-cd backend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-The API runs at:
-
-```text
-http://localhost:3000
-```
-
-## Connect the frontend to the backend
-
-When the frontend and backend are served from the same origin, the frontend automatically tries `/api/items`.
-
-For a separately hosted backend, set this before `app.js` loads:
-
-```html
-<script>
-  window.VANLOST_API_BASE_URL = "https://your-api.example.com";
-</script>
-<script src="app.js"></script>
-```
-
-If the API is not reachable, the frontend falls back to browser-only demo mode using `localStorage`.
-
-## Environment variables
-
-Create `backend/.env` from `backend/.env.example`.
-
-```text
-PORT=3000
-CORS_ORIGIN=
-ADMIN_TOKEN=
-DATA_FILE=
-```
-
-Notes:
-
-- `CORS_ORIGIN` can be a comma-separated list such as `https://mohammad-masoumi.github.io,http://localhost:5500`.
-- If `ADMIN_TOKEN` is set, `PATCH`, `DELETE`, and `reset-demo` require the `x-admin-token` header.
-- `DATA_FILE` defaults to `backend/data/items.json`.
-
-## Live site
-
-This repository includes a GitHub Actions workflow at `.github/workflows/deploy-pages.yml`.
-
-After GitHub Pages is enabled for this repository with **Source: GitHub Actions**, the static site will publish automatically on every push to `main`.
-
-Expected Pages URL:
+Frontend:
 
 ```text
 https://mohammad-masoumi.github.io/vanlostandfound/
 ```
 
-## Important deployment note
+Backend, if Render accepts the configured service name:
 
-GitHub Pages hosts only the static frontend. To make listings shared between all visitors, deploy the `backend/` folder to a Node hosting provider such as Render, Railway, Fly.io, or a VPS, then set `window.VANLOST_API_BASE_URL` in `index.html` to the deployed API URL.
+```text
+https://vanlostandfound-api.onrender.com
+```
+
+The frontend API URL is configured in `config.js`. If Render gives the backend a different URL, update `productionApiUrl` in that file.
+
+## Deploy the backend on Render
+
+Use Render for the backend. GitHub Pages is only for the static frontend.
+
+1. Create a Render PostgreSQL database.
+2. Create a Render Web Service from this repository.
+3. Set Root Directory to `server`.
+4. Set Build Command to `npm install`.
+5. Set Start Command to `npm start`.
+6. Set Health Check Path to `/health`.
+7. In Render service settings, add environment variables for production mode, the database connection URL, and allowed CORS origins.
+8. Deploy the service.
+
+Use this CORS origins value:
+
+```text
+https://mohammad-masoumi.github.io,http://localhost:5500,http://127.0.0.1:5500
+```
+
+The repo also includes `render.yaml` as a starting Blueprint file for Render.
+
+## API endpoints
+
+```text
+GET  /health
+GET  /api/items
+POST /api/items
+```
+
+## Local development
+
+Backend:
+
+```bash
+cd server
+cp .env.example .env
+npm install
+npm run dev
+```
+
+Frontend:
+
+```bash
+python3 -m http.server 5500
+```
+
+Then open `http://localhost:5500`.
+
+## Privacy note
+
+This app is public by design. Do not post full ID numbers, home addresses, or highly sensitive details. For found items, ask claimants to describe private identifying details before handoff.
