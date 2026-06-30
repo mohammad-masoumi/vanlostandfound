@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: vanlostandfound-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+
+databases:
+  - name: vanlostandfound-db
