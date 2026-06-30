@@ -3,20 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="VanLost & Found helps people in Vancouver report, browse, and reconnect lost and found items." />
-  <title>VanLost & Found | Community Lost Items Board</title>
+  <meta name="description" content="VanLost & Found helps Vancouver residents report and find lost items." />
+  <title>VanLost & Found</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="site-header">
+  <header class="site-header" id="top">
     <nav class="nav" aria-label="Main navigation">
-      <a class="brand" href="#top" aria-label="VanLost and Found home">
-        <span class="brand-mark" aria-hidden="true">V</span>
-        <span>VanLost<span class="accent">&Found</span></span>
-      </a>
+      <a class="brand" href="#top"><span class="brand-mark">V</span><span>VanLost<span class="accent">&Found</span></span></a>
       <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <div class="nav-links" id="nav-links">
         <a href="#browse">Browse</a>
@@ -26,193 +23,72 @@
       </div>
     </nav>
 
-    <section class="hero" id="top">
+    <section class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Vancouver community board</p>
         <h1>Lost something? Found something? Bring it back to the right person.</h1>
-        <p class="hero-text">
-          A simple, friendly lost-and-found hub for phones, wallets, keys, bags, bikes, IDs, and everyday items around Vancouver.
-        </p>
+        <p class="hero-text">A simple lost-and-found hub for phones, wallets, keys, bags, bikes, IDs, pets, and everyday items around Vancouver.</p>
         <div class="hero-actions">
           <a class="button" href="#report">Report an item</a>
           <a class="button button-ghost" href="#browse">Browse listings</a>
         </div>
-        <dl class="hero-stats" aria-label="Site highlights">
-          <div>
-            <dt id="total-items">0</dt>
-            <dd>active listings</dd>
-          </div>
-          <div>
-            <dt>24/7</dt>
-            <dd>self-serve board</dd>
-          </div>
-          <div>
-            <dt>Local</dt>
-            <dd>Vancouver focused</dd>
-          </div>
+        <dl class="hero-stats">
+          <div><dt id="total-items">0</dt><dd>active listings</dd></div>
+          <div><dt>Render</dt><dd>backend hosted</dd></div>
+          <div><dt>Local</dt><dd>Vancouver focused</dd></div>
         </dl>
       </div>
-      <div class="hero-card" aria-label="Featured notice">
+      <div class="hero-card">
         <div class="card-glow"></div>
         <p class="status-pill found">Found</p>
         <h2>Black backpack near Waterfront Station</h2>
-        <p>Describe the contents to claim. Posted today around Downtown Vancouver.</p>
-        <div class="mini-details">
-          <span>📍 Downtown</span>
-          <span>🎒 Bag</span>
-          <span>🔒 Safe handoff</span>
-        </div>
+        <p>Describe the contents to claim. Posted around Downtown Vancouver.</p>
+        <div class="mini-details"><span>📍 Downtown</span><span>🎒 Bag</span><span>🔒 Safe handoff</span></div>
       </div>
     </section>
   </header>
 
   <main>
-    <section class="section intro-grid" aria-label="Why use VanLost and Found">
-      <article>
-        <span class="icon">🔎</span>
-        <h3>Search quickly</h3>
-        <p>Filter by lost or found status, category, neighbourhood, and keywords.</p>
-      </article>
-      <article>
-        <span class="icon">📝</span>
-        <h3>Post in seconds</h3>
-        <p>Add the item, location, date, and a safe contact method without making an account.</p>
-      </article>
-      <article>
-        <span class="icon">🤝</span>
-        <h3>Reconnect safely</h3>
-        <p>Use identifying questions and meet in public places for handoffs.</p>
-      </article>
+    <section class="section intro-grid">
+      <article><span class="icon">🔎</span><h3>Search quickly</h3><p>Filter by status, category, area, and keywords.</p></article>
+      <article><span class="icon">📝</span><h3>Post in seconds</h3><p>Save new listings to the live backend database.</p></article>
+      <article><span class="icon">🤝</span><h3>Reconnect safely</h3><p>Verify unique item details before arranging a public handoff.</p></article>
     </section>
 
     <section class="section listings-section" id="browse">
       <div class="section-heading">
         <p class="eyebrow">Browse listings</p>
         <h2>Recently reported items</h2>
-        <p>Use filters to narrow your search. Demo submissions are saved in this browser.</p>
+        <p>Listings are loaded from the Render-hosted backend.</p>
       </div>
 
-      <form class="filters" id="filters" aria-label="Filter item listings">
-        <label>
-          <span>Keyword</span>
-          <input id="search" type="search" placeholder="wallet, keys, AirPods..." autocomplete="off" />
-        </label>
-        <label>
-          <span>Status</span>
-          <select id="status-filter">
-            <option value="all">All</option>
-            <option value="Lost">Lost</option>
-            <option value="Found">Found</option>
-          </select>
-        </label>
-        <label>
-          <span>Category</span>
-          <select id="category-filter">
-            <option value="all">All categories</option>
-            <option>Phone</option>
-            <option>Wallet</option>
-            <option>Keys</option>
-            <option>Bag</option>
-            <option>Bike</option>
-            <option>Pet</option>
-            <option>ID / Documents</option>
-            <option>Other</option>
-          </select>
-        </label>
-        <label>
-          <span>Area</span>
-          <select id="area-filter">
-            <option value="all">All areas</option>
-            <option>Downtown</option>
-            <option>Kitsilano</option>
-            <option>UBC</option>
-            <option>Burnaby</option>
-            <option>North Vancouver</option>
-            <option>Richmond</option>
-            <option>Surrey</option>
-            <option>Other</option>
-          </select>
-        </label>
+      <form class="filters" id="filters">
+        <label><span>Keyword</span><input id="search" type="search" placeholder="wallet, keys, AirPods..." autocomplete="off" /></label>
+        <label><span>Status</span><select id="status-filter"><option value="all">All</option><option value="Lost">Lost</option><option value="Found">Found</option></select></label>
+        <label><span>Category</span><select id="category-filter"><option value="all">All categories</option><option>Phone</option><option>Wallet</option><option>Keys</option><option>Bag</option><option>Bike</option><option>Pet</option><option>ID / Documents</option><option>Other</option></select></label>
+        <label><span>Area</span><select id="area-filter"><option value="all">All areas</option><option>Downtown</option><option>Kitsilano</option><option>UBC</option><option>Burnaby</option><option>North Vancouver</option><option>Richmond</option><option>Surrey</option><option>Other</option></select></label>
       </form>
 
-      <div class="toolbar">
-        <p id="results-count" aria-live="polite">Showing listings</p>
-        <button class="link-button" id="reset-demo" type="button">Reset demo data</button>
-      </div>
-
+      <div class="toolbar"><p id="results-count" aria-live="polite">Loading listings</p><button class="link-button" id="reset-demo" type="button">Refresh listings</button></div>
       <div class="item-grid" id="items" aria-live="polite"></div>
       <p class="empty-state" id="empty-state" hidden>No matching items yet. Try another filter or report an item below.</p>
     </section>
 
     <section class="section report-section" id="report">
       <div class="report-panel">
-        <div>
-          <p class="eyebrow">Report an item</p>
-          <h2>Add a lost or found listing</h2>
-          <p>
-            Keep personal information limited. For found items, ask the claimant to describe unique details before handoff.
-          </p>
-        </div>
-
+        <div><p class="eyebrow">Report an item</p><h2>Add a lost or found listing</h2><p>Keep private details limited and use public places for handoffs.</p></div>
         <form class="report-form" id="report-form">
           <div class="form-row">
-            <label>
-              <span>Status</span>
-              <select name="status" required>
-                <option value="Lost">I lost something</option>
-                <option value="Found">I found something</option>
-              </select>
-            </label>
-            <label>
-              <span>Category</span>
-              <select name="category" required>
-                <option>Phone</option>
-                <option>Wallet</option>
-                <option>Keys</option>
-                <option>Bag</option>
-                <option>Bike</option>
-                <option>Pet</option>
-                <option>ID / Documents</option>
-                <option>Other</option>
-              </select>
-            </label>
+            <label><span>Status</span><select name="status" required><option value="Lost">I lost something</option><option value="Found">I found something</option></select></label>
+            <label><span>Category</span><select name="category" required><option>Phone</option><option>Wallet</option><option>Keys</option><option>Bag</option><option>Bike</option><option>Pet</option><option>ID / Documents</option><option>Other</option></select></label>
           </div>
-
-          <label>
-            <span>Item title</span>
-            <input name="title" type="text" maxlength="80" placeholder="Blue wallet, silver keys, black backpack..." required />
-          </label>
-
-          <label>
-            <span>Description</span>
-            <textarea name="description" rows="4" maxlength="260" placeholder="Add helpful details, but avoid sensitive information like full ID numbers." required></textarea>
-          </label>
-
+          <label><span>Item title</span><input name="title" type="text" maxlength="80" placeholder="Blue wallet, silver keys, black backpack..." required /></label>
+          <label><span>Description</span><textarea name="description" rows="4" maxlength="260" placeholder="Add helpful details, but avoid sensitive numbers." required></textarea></label>
           <div class="form-row">
-            <label>
-              <span>Area</span>
-              <select name="area" required>
-                <option>Downtown</option>
-                <option>Kitsilano</option>
-                <option>UBC</option>
-                <option>Burnaby</option>
-                <option>North Vancouver</option>
-                <option>Richmond</option>
-                <option>Surrey</option>
-                <option>Other</option>
-              </select>
-            </label>
-            <label>
-              <span>Date</span>
-              <input name="date" type="date" required />
-            </label>
+            <label><span>Area</span><select name="area" required><option>Downtown</option><option>Kitsilano</option><option>UBC</option><option>Burnaby</option><option>North Vancouver</option><option>Richmond</option><option>Surrey</option><option>Other</option></select></label>
+            <label><span>Date</span><input name="date" type="date" required /></label>
           </div>
-
-          <label>
-            <span>Safe contact method</span>
-            <input name="contact" type="text" maxlength="90" placeholder="Email, phone, Instagram, or campus desk info" required />
-          </label>
-
+          <label><span>Safe contact method</span><input name="contact" type="text" maxlength="90" placeholder="Email, phone, Instagram, or front desk info" required /></label>
           <button class="button" type="submit">Add listing</button>
           <p class="form-note" id="form-note" role="status" aria-live="polite"></p>
         </form>
@@ -220,55 +96,27 @@
     </section>
 
     <section class="section steps" id="how-it-works">
-      <div class="section-heading">
-        <p class="eyebrow">How it works</p>
-        <h2>Three safe steps</h2>
-      </div>
+      <div class="section-heading"><p class="eyebrow">How it works</p><h2>Three safe steps</h2></div>
       <ol>
-        <li>
-          <strong>Post or search.</strong>
-          Share the item, approximate location, and date, or browse recent reports.
-        </li>
-        <li>
-          <strong>Verify ownership.</strong>
-          Ask for unique details before giving out a found item.
-        </li>
-        <li>
-          <strong>Meet safely.</strong>
-          Choose a public place like a campus desk, station office, cafe, or community centre.
-        </li>
+        <li><strong>Post or search.</strong> Share the item, approximate location, and date.</li>
+        <li><strong>Verify ownership.</strong> Ask for unique details before giving out a found item.</li>
+        <li><strong>Meet safely.</strong> Choose a public place for the handoff.</li>
       </ol>
     </section>
   </main>
 
-  <footer class="footer">
-    <p>© <span id="year"></span> VanLost & Found. Built for the Vancouver community.</p>
-    <a href="#top">Back to top</a>
-  </footer>
+  <footer class="footer"><p>© <span id="year"></span> VanLost & Found. Built for Vancouver.</p><a href="#top">Back to top</a></footer>
 
   <template id="item-template">
     <article class="item-card">
-      <div class="item-card-header">
-        <span class="status-pill"></span>
-        <span class="category"></span>
-      </div>
-      <h3></h3>
-      <p class="description"></p>
-      <dl>
-        <div>
-          <dt>Area</dt>
-          <dd class="area"></dd>
-        </div>
-        <div>
-          <dt>Date</dt>
-          <dd class="date"></dd>
-        </div>
-      </dl>
-      <button class="contact-button" type="button">Show contact</button>
-      <p class="contact" hidden></p>
+      <div class="item-card-header"><span class="status-pill"></span><span class="category"></span></div>
+      <h3></h3><p class="description"></p>
+      <dl><div><dt>Area</dt><dd class="area"></dd></div><div><dt>Date</dt><dd class="date"></dd></div></dl>
+      <button class="contact-button" type="button">Show contact</button><p class="contact" hidden></p>
     </article>
   </template>
 
-  <script src="app.js"></script>
+  <script src="config.js"></script>
+  <script src="app-api.js"></script>
 </body>
 </html>
